@@ -3,10 +3,9 @@
 import argparse
 import sys
 import os
-
+import redis_sentinel_url
 from redis import Redis
 from rq_scheduler.scheduler import Scheduler
-
 from rq_scheduler.utils import setup_loghandlers
 
 
@@ -39,7 +38,12 @@ def main():
             f.write(pid)
 
     if args.url is not None:
-        connection = Redis.from_url(args.url)
+        # connection = Redis.from_url(args.url)
+        sentinel, client = redis_sentinel_url.connect(args.url)
+        if sentinel:
+            connection = sentinel.master_for('mymaster', redis_class=Redis)
+        else:
+            connection = Redis.from_url(args.url)
     else:
         connection = Redis(args.host, args.port, args.db, args.password)
 
