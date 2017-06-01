@@ -41,7 +41,7 @@ def main():
         # connection = Redis.from_url(args.url)
         sentinel, client = redis_sentinel_url.connect(args.url)
         if sentinel:
-            connection = sentinel.master_for('mymaster', redis_class=Redis)
+            connection = sentinel.master_for('master', redis_class=Redis)
         else:
             connection = Redis.from_url(args.url)
     else:
